@@ -1,0 +1,14 @@
+services:
+  - type: web
+    name: solo-leveling-system
+    env: docker
+    plan: free # Change to 'starter' if you need a persistent disk
+    region: ohio
+    dockerfilePath: ./Dockerfile
+    envVars:
+      - key: PORT
+        value: 10000 # Render usually uses 10000
+    disk: # Optional: Persistent disk for the player.json file
+      name: solo-leveling-data
+      mountPath: /app/database
+      sizeGB: 1

@@ -1,0 +1,187 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Solo Leveling System</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link href="https://fonts.googleapis.com/css2?family=Share+Tech+Mono&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="/static/css/style.css">
+    <style>
+        body { background-color: #050505; color: #00f2ff; font-family: 'Share Tech Mono', monospace; overflow-x: hidden; }
+        .hud-border { border: 1px solid rgba(0, 242, 255, 0.3); box-shadow: 0 0 15px rgba(0, 242, 255, 0.1); background: rgba(10, 10, 10, 0.8); backdrop-filter: blur(8px); }
+        .glow-text { text-shadow: 0 0 10px rgba(0, 242, 255, 0.7); }
+        .penalty-text { color: #ff003c; text-shadow: 0 0 10px rgba(255, 0, 60, 0.7); }
+        .xp-bar-fill { transition: width 0.5s ease-out; }
+        .tab-btn.active { background: rgba(0, 242, 255, 0.2); border-bottom: 2px solid #00f2ff; }
+        .hidden { display: none; }
+        .urgent-border { border: 1px solid #ff003c; box-shadow: 0 0 15px rgba(255, 0, 60, 0.3); animation: pulse-red 2s infinite; }
+        @keyframes pulse-red { 0% { box-shadow: 0 0 5px rgba(255, 0, 60, 0.3); } 50% { box-shadow: 0 0 20px rgba(255, 0, 60, 0.6); } 100% { box-shadow: 0 0 5px rgba(255, 0, 60, 0.3); } }
+        .cooldown-overlay { background: rgba(0, 0, 0, 0.7); display: flex; align-items: center; justify-content: center; font-size: 0.75rem; color: #fff; }
+    </style>
+</head>
+<body class="min-h-screen flex flex-col items-center py-10 bg-[radial-gradient(circle_at_center,_var(--tw-gradient-stops))] from-blue-900/10 via-black to-black">
+    
+    <!-- Top Tabs -->
+    <div class="flex gap-2 mb-8 z-10 overflow-x-auto max-w-full px-4">
+        <button onclick="switchTab('status')" id="tab-status" class="tab-btn active px-4 py-2 border border-blue-500/30 uppercase text-xs hover:bg-blue-500/10 transition-all whitespace-nowrap">Status</button>
+        <button onclick="switchTab('skills')" id="tab-skills" class="tab-btn px-4 py-2 border border-blue-500/30 uppercase text-xs hover:bg-blue-500/10 transition-all whitespace-nowrap">Skills</button>
+        <button onclick="switchTab('quests')" id="tab-quests" class="tab-btn px-4 py-2 border border-blue-500/30 uppercase text-xs hover:bg-blue-500/10 transition-all whitespace-nowrap">Quests</button>
+        <button onclick="switchTab('inventory')" id="tab-inventory" class="tab-btn px-4 py-2 border border-blue-500/30 uppercase text-xs hover:bg-blue-500/10 transition-all whitespace-nowrap">Inventory</button>
+        <button onclick="switchTab('shop')" id="tab-shop" class="tab-btn px-4 py-2 border border-blue-500/30 uppercase text-xs hover:bg-blue-500/10 transition-all whitespace-nowrap">Store</button>
+        <button onclick="switchTab('editor')" id="tab-editor" class="tab-btn px-4 py-2 border border-blue-500/30 uppercase text-xs hover:bg-blue-500/10 transition-all whitespace-nowrap">Settings</button>
+    </div>
+
+    <div id="system-overlay" class="w-full max-w-5xl px-4">
+        
+        <!-- Status Tab -->
+        <div id="content-status" class="grid grid-cols-1 md:grid-cols-2 gap-8">
+            <div class="hud-border p-6 rounded-sm relative overflow-hidden">
+                <h2 class="text-2xl mb-4 glow-text border-b border-blue-500/30 pb-2">[ PLAYER INFO ]</h2>
+                <div class="space-y-4">
+                    <div class="flex justify-between items-center">
+                        <span class="text-xs">NAME:</span>
+                        <span class="text-xl font-bold glow-text">RITWIK PATNAIK</span>
+                    </div>
+                    <div class="flex justify-between"><span>JOB:</span><span id="job-display" class="text-xl text-yellow-400">NONE</span></div>
+                    <div class="flex justify-between"><span>RANK:</span><span id="rank-display" class="text-xl text-purple-400">E</span></div>
+                    <div class="flex justify-between"><span>LEVEL:</span><span id="level-display" class="text-xl">1</span></div>
+                    <div class="flex justify-between items-center text-yellow-500">
+                        <span>GOLD:</span>
+                        <span id="gold-display" class="text-2xl font-bold">0</span>
+                    </div>
+                    <div class="space-y-1">
+                        <div class="flex justify-between text-xs"><span>XP:</span><span id="xp-text">0 / 100</span></div>
+                        <div class="w-full h-2 bg-blue-900/30 rounded-full overflow-hidden border border-blue-500/20">
+                            <div id="xp-bar" class="xp-bar-fill h-full bg-[#00f2ff]" style="width: 0%"></div>
+                        </div>
+                    </div>
+                    <div class="mt-4 pt-4 border-t border-blue-500/20">
+                        <h3 class="text-sm mb-2 text-blue-400 uppercase tracking-widest">Active Title:</h3>
+                        <div id="active-title-display" class="p-2 border border-blue-500/30 bg-blue-500/5 text-sm italic">
+                            NONE
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <div class="hud-border p-6 rounded-sm">
+                <h2 class="text-2xl mb-4 glow-text border-b border-blue-500/30 pb-2">[ ATTRIBUTES ]</h2>
+                <div class="grid grid-cols-1 gap-2 mt-4" id="stats-list"></div>
+                <div class="mt-4 pt-4 border-t border-blue-500/20 text-center">
+                    <span class="text-sm">Stat Points: <span id="stat-points" class="glow-text text-xl">0</span></span>
+                </div>
+            </div>
+        </div>
+
+        <!-- Skills Tab -->
+        <div id="content-skills" class="hidden space-y-8">
+            <div class="hud-border p-8 rounded-sm">
+                <h2 class="text-2xl mb-6 glow-text border-b border-blue-500/30 pb-2">[ ACTIVE SKILLS ]</h2>
+                <div id="active-skills-list" class="grid grid-cols-1 md:grid-cols-2 gap-4"></div>
+            </div>
+            <div class="hud-border p-8 rounded-sm">
+                <h2 class="text-2xl mb-6 glow-text border-b border-blue-500/30 pb-2">[ PASSIVE BUFFS ]</h2>
+                <div id="passive-skills-list" class="grid grid-cols-1 md:grid-cols-2 gap-4"></div>
+            </div>
+        </div>
+
+        <!-- Quests Tab -->
+        <div id="content-quests" class="hidden space-y-8">
+            <div class="grid grid-cols-1 md:grid-cols-2 gap-8">
+                <div class="space-y-8">
+                    <div class="hud-border p-6 rounded-sm">
+                        <h2 class="text-xl mb-4 glow-text border-b border-blue-500/30 pb-2">[ DAILY QUESTS ]</h2>
+                        <div id="quest-list" class="space-y-3"></div>
+                    </div>
+                    <div id="urgent-panel" class="hidden">
+                        <div class="hud-border urgent-border p-6 rounded-sm bg-red-900/10">
+                            <h2 class="text-xl mb-4 text-red-500 glow-text border-b border-red-500/30 pb-2">[ EMERGENCY QUESTS ]</h2>
+                            <div id="urgent-list" class="space-y-3"></div>
+                        </div>
+                    </div>
+                </div>
+                <div class="hud-border p-6 rounded-sm bg-purple-900/5">
+                    <h2 class="text-xl mb-4 text-purple-400 glow-text border-b border-purple-500/30 pb-2">[ HIDDEN QUESTS ]</h2>
+                    <div id="hidden-list" class="space-y-3"></div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Inventory Tab -->
+        <div id="content-inventory" class="hidden">
+            <div class="hud-border p-8 rounded-sm">
+                <h2 class="text-2xl mb-6 glow-text border-b border-blue-500/30 pb-2">[ SPATIAL INVENTORY ]</h2>
+                <div id="inventory-grid" class="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 gap-4"></div>
+            </div>
+        </div>
+
+        <!-- Shop Tab -->
+        <div id="content-shop" class="hidden">
+            <div class="hud-border p-8 rounded-sm">
+                <h2 class="text-2xl mb-2 glow-text border-b border-blue-500/30 pb-2">[ SYSTEM STORE ]</h2>
+                <p class="text-xs text-blue-400/50 mb-6 italic">Materialize items with Gold</p>
+                <div id="shop-list" class="grid grid-cols-1 md:grid-cols-2 gap-6"></div>
+            </div>
+        </div>
+
+        <!-- Editor Tab -->
+        <div id="content-editor" class="hidden space-y-8 pb-20">
+            <!-- Daily, Urgent, Hidden -->
+            <div class="grid grid-cols-1 md:grid-cols-2 gap-8">
+                <div class="hud-border p-6">
+                    <h2 class="text-xl mb-4 glow-text">[ DAILY QUESTS ]</h2>
+                    <div id="edit-daily-list" class="space-y-2 mb-4"></div>
+                    <button onclick="addEditorQuest('daily')" class="px-3 py-1 border border-blue-500/50 text-xs">Add Quest</button>
+                </div>
+                <div class="hud-border p-6 border-red-500/30">
+                    <h2 class="text-xl mb-4 text-red-500">[ URGENT QUESTS ]</h2>
+                    <div id="edit-urgent-list" class="space-y-2 mb-4"></div>
+                    <button onclick="addEditorQuest('urgent')" class="px-3 py-1 border border-red-500/50 text-xs">Add Urgent</button>
+                </div>
+            </div>
+
+            <div class="hud-border p-6 border-purple-500/30">
+                <h2 class="text-xl mb-4 text-purple-400">[ HIDDEN QUESTS ]</h2>
+                <div id="edit-hidden-list" class="space-y-2 mb-4"></div>
+                <button onclick="addEditorQuest('hidden')" class="px-3 py-1 border border-purple-500/50 text-xs">Add Hidden</button>
+            </div>
+
+            <!-- Shop, Titles, Skills -->
+            <div class="hud-border p-6 border-yellow-500/30">
+                <h2 class="text-xl mb-4 text-yellow-500">[ STORE CATALOG ]</h2>
+                <div id="edit-shop-list" class="space-y-2 mb-4"></div>
+                <button onclick="addEditorShopItem()" class="px-3 py-1 border border-yellow-500/50 text-xs text-yellow-400">Add Item</button>
+            </div>
+
+            <div class="grid grid-cols-1 md:grid-cols-2 gap-8">
+                <div class="hud-border p-6">
+                    <h2 class="text-xl mb-4 glow-text">[ TITLES ]</h2>
+                    <div id="edit-titles-list" class="space-y-2 mb-4"></div>
+                    <button onclick="addEditorTitle()" class="px-3 py-1 border border-blue-500/50 text-xs">Add Title</button>
+                </div>
+                <div class="hud-border p-6">
+                    <h2 class="text-xl mb-4 glow-text">[ SKILLS ]</h2>
+                    <div class="space-y-4">
+                        <div>
+                            <h3 class="text-xs mb-2 text-blue-400">Active Skills</h3>
+                            <div id="edit-active-skills-list" class="space-y-2"></div>
+                            <button onclick="addEditorSkill('active')" class="mt-2 px-3 py-1 border border-blue-500/50 text-xs">Add Active</button>
+                        </div>
+                        <div>
+                            <h3 class="text-xs mb-2 text-blue-400">Passive Buffs</h3>
+                            <div id="edit-passive-skills-list" class="space-y-2"></div>
+                            <button onclick="addEditorSkill('passive')" class="mt-2 px-3 py-1 border border-blue-500/50 text-xs">Add Passive</button>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <div class="fixed bottom-10 left-1/2 -translate-x-1/2 z-50">
+                <button onclick="saveAllQuests()" class="px-10 py-3 bg-blue-500/20 border-2 border-blue-500 text-white glow-text uppercase tracking-widest hover:bg-blue-500/40 transition-all">Save System Configuration</button>
+            </div>
+        </div>
+    </div>
+
+    <script src="/static/js/system.js"></script>
+</body>
+</html>
