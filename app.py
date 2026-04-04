@@ -62,19 +62,33 @@ class AllQuestsUpdate(BaseModel):
 
 def load_player():
     if not os.path.exists(DB_FILE):
-        return {}
-    with open(DB_FILE, "r") as f:
-        player = json.load(f)
+        player = {}
+    else:
+        with open(DB_FILE, "r") as f:
+            try:
+                player = json.load(f)
+            except json.JSONDecodeError:
+                player = {}
     
-    # Ensure new fields exist for legacy support
+    # Ensure all required fields exist
+    if "level" not in player: player["level"] = 1
+    if "xp" not in player: player["xp"] = 0
     if "gold" not in player: player["gold"] = 0
+    if "stat_points" not in player: player["stat_points"] = 0
+    if "skill_points" not in player: player["skill_points"] = 0
+    if "rank" not in player: player["rank"] = "E"
+    if "job" not in player: player["job"] = "Unemployed"
+    if "stats" not in player:
+        player["stats"] = {"strength": 10, "agility": 10, "vitality": 10, "sense": 10}
     if "inventory" not in player: player["inventory"] = []
     if "shop" not in player: player["shop"] = []
     if "titles" not in player: player["titles"] = []
     if "skills" not in player: 
         player["skills"] = {"active": [], "passive": []}
+    if "quests" not in player: player["quests"] = []
     if "urgent_quests" not in player: player["urgent_quests"] = []
     if "hidden_quests" not in player: player["hidden_quests"] = []
+    if "penalty_active" not in player: player["penalty_active"] = False
     
     last_login = player.get("last_login", datetime.now().strftime("%Y-%m-%d"))
     today = datetime.now().strftime("%Y-%m-%d")
