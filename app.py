@@ -14,7 +14,8 @@ app = FastAPI()
 app.mount("/static", StaticFiles(directory="static"), name="static")
 templates = Jinja2Templates(directory="templates")
 
-DB_FILE = "database/player.json"
+DATA_DIR = os.getenv("DATA_DIR", "database")
+DB_FILE = os.path.join(DATA_DIR, "player.json")
 
 # Models for Request Bodies
 class QuestBase(BaseModel):
@@ -105,6 +106,7 @@ def load_player():
     return player
 
 def save_player_as_is(data):
+    os.makedirs(os.path.dirname(DB_FILE), exist_ok=True)
     with open(DB_FILE, "w") as f:
         json.dump(data, f, indent=4)
 
