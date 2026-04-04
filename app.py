@@ -2,6 +2,7 @@ import os
 import json
 import logging
 import time
+import shutil
 from datetime import datetime
 from typing import List, Optional, Dict
 from fastapi import FastAPI, Request, HTTPException
@@ -62,6 +63,20 @@ class AllQuestsUpdate(BaseModel):
     skills_passive: List[Skill]
 
 def load_player():
+    os.makedirs(DATA_DIR, exist_ok=True)
+    
+    # Automatic seeding: if persistent file is missing, copy from default repo location
+    if not os.path.exists(DB_FILE):
+        default_db = "database/player.json"
+        # Only copy if we are using a different DATA_DIR (like in production) 
+        # and the default file exists in the repo
+        if os.path.exists(default_db) and os.path.abspath(DB_FILE) != os.path.abspath(default_db):
+            try:
+                shutil.copy(default_db, DB_FILE)
+                print(f"Seeded {DB_FILE} from {default_db}")
+            except Exception as e:
+                print(f"Failed to seed {DB_FILE}: {e}")
+
     if not os.path.exists(DB_FILE):
         player = {}
     else:
