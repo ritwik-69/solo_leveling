@@ -1,7 +1,7 @@
 {
     "level": 2,
-    "xp": 30,
-    "gold": 470,
+    "xp": 40,
+    "gold": 490,
     "stat_points": 0,
     "skill_points": 1,
     "rank": "E",
@@ -89,32 +89,25 @@
     ],
     "quests": [
         {
-            "id": 1,
-            "name": "Push-ups (100)",
-            "xp": 10,
-            "gold": 20,
-            "completed": true
-        },
-        {
             "id": 2,
             "name": "Sit-ups (100)",
             "xp": 10,
             "gold": 20,
-            "completed": true
+            "completed": false
         },
         {
             "id": 3,
             "name": "Squats (100)",
             "xp": 10,
             "gold": 20,
-            "completed": true
+            "completed": false
         },
         {
             "id": 4,
             "name": "Run (10km)",
             "xp": 50,
             "gold": 100,
-            "completed": true
+            "completed": false
         }
     ],
     "urgent_quests": [
@@ -128,5 +121,5 @@
     ],
     "hidden_quests": [],
     "penalty_active": false,
-    "last_login": "2026-04-04"
+    "last_login": "2026-04-05"
 }

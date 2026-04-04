@@ -133,6 +133,11 @@ async def complete_task(task_id: int):
         if quest["id"] == task_id and not quest["completed"]:
             quest["completed"] = True
             add_rewards(player, quest["xp"], quest.get("gold", 0))
+            
+            # Check if all daily quests are now completed to clear penalty
+            if all(q["completed"] for q in player["quests"]):
+                player["penalty_active"] = False
+                
             save_player_as_is(player)
             return player
     raise HTTPException(status_code=400, detail="Task not found or completed")

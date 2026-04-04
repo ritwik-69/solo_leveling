@@ -89,8 +89,25 @@
         <div id="content-quests" class="hidden space-y-8">
             <div class="grid grid-cols-1 md:grid-cols-2 gap-8">
                 <div class="space-y-8">
+                    <div id="penalty-zone" class="hidden">
+                        <div class="hud-border border-red-500/50 p-6 bg-red-900/10">
+                            <h2 class="text-xl mb-4 text-red-500 glow-text border-b border-red-500/30 pb-2 flex justify-between">
+                                [ PENALTY PROTOCOL ]
+                                <span class="animate-pulse">ACTIVE</span>
+                            </h2>
+                            <p class="text-xs text-red-400 mb-4 italic">Failed to complete previous daily quests. Survival is mandatory.</p>
+                            <div class="p-3 border border-red-500/50 bg-red-900/20">
+                                <span class="text-sm font-bold">PENALTY QUEST: SURVIVAL</span>
+                                <div class="text-[10px] mt-1 text-red-400">Time until clear: <span id="penalty-timer">--:--:--</span></div>
+                            </div>
+                        </div>
+                    </div>
+
                     <div class="hud-border p-6 rounded-sm">
-                        <h2 class="text-xl mb-4 glow-text border-b border-blue-500/30 pb-2">[ DAILY QUESTS ]</h2>
+                        <div class="flex justify-between items-end mb-4 border-b border-blue-500/30 pb-2">
+                            <h2 class="text-xl glow-text">[ DAILY QUESTS ]</h2>
+                            <span class="text-[10px] text-blue-400 mb-1">RESET IN: <span id="reset-timer" class="font-bold">--:--:--</span></span>
+                        </div>
                         <div id="quest-list" class="space-y-3"></div>
                     </div>
                     <div id="urgent-panel" class="hidden">

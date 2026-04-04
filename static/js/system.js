@@ -1,8 +1,15 @@
 let currentPlayer = null;
+let lastLoginDate = null;
 
 async function updateUI() {
     const response = await fetch('/api/status');
     currentPlayer = await response.json();
+
+    // Detect Reset while open
+    if (lastLoginDate && lastLoginDate !== currentPlayer.last_login) {
+        alert("SYSTEM: A new day has started. Daily quests have been reset.");
+    }
+    lastLoginDate = currentPlayer.last_login;
 
     // Basic Stats
     document.getElementById('level-display').textContent = currentPlayer.level;
@@ -37,11 +44,35 @@ async function updateUI() {
         statsList.appendChild(div);
     });
 
+    // Penalty & Reset Timer
+    updateTimers();
+
     renderQuests();
     renderSkills();
     renderInventory();
     renderShop();
     renderEditorData();
+}
+
+function updateTimers() {
+    const now = new Date();
+    const night = new Date(now.getFullYear(), now.getMonth(), now.getDate() + 1, 0, 0, 0);
+    const msUntilReset = night - now;
+    
+    const h = Math.floor(msUntilReset / 3600000);
+    const m = Math.floor((msUntilReset % 3600000) / 60000);
+    const s = Math.floor((msUntilReset % 60000) / 1000);
+    
+    const timeStr = `${h.toString().padStart(2, '0')}:${m.toString().padStart(2, '0')}:${s.toString().padStart(2, '0')}`;
+    document.getElementById('reset-timer').textContent = timeStr;
+    
+    const penaltyZone = document.getElementById('penalty-zone');
+    if (currentPlayer.penalty_active) {
+        penaltyZone.classList.remove('hidden');
+        document.getElementById('penalty-timer').textContent = timeStr;
+    } else {
+        penaltyZone.classList.add('hidden');
+    }
 }
 
 function renderQuests() {
