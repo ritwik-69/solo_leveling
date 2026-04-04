@@ -1,0 +1,125 @@
+{
+    "level": 2,
+    "xp": 40,
+    "gold": 490,
+    "stat_points": 0,
+    "skill_points": 1,
+    "rank": "E",
+    "job": "SDE Intern",
+    "stats": {
+        "strength": 12,
+        "agility": 10,
+        "vitality": 11,
+        "sense": 10
+    },
+    "titles": [
+        {
+            "id": 1,
+            "name": "Wolf Slayer",
+            "buff": "+40% stats vs beast-type enemies",
+            "active": true
+        }
+    ],
+    "skills": {
+        "passive": [
+            {
+                "id": 1,
+                "name": "Tenacity",
+                "description": "Boosts focus when burnt out",
+                "cooldown": 0,
+                "level": 1,
+                "max_level": 5,
+                "cost": 1,
+                "last_used": 0
+            }
+        ],
+        "active": [
+            {
+                "id": 1,
+                "name": "Stealth",
+                "description": "Deep work mode",
+                "cooldown": 3600,
+                "level": 0,
+                "max_level": 5,
+                "cost": 1,
+                "last_used": 1775325724.43487
+            },
+            {
+                "id": 2,
+                "name": "Bloodlust",
+                "description": "Intense focus session",
+                "cooldown": 7200,
+                "level": 0,
+                "max_level": 5,
+                "cost": 1,
+                "last_used": 1775325717.930953
+            },
+            {
+                "id": 1775326042130,
+                "name": "New Skill",
+                "description": "Desc",
+                "cooldown": 60,
+                "level": 0,
+                "max_level": 5,
+                "cost": 1,
+                "last_used": 1775326705.7626827
+            }
+        ]
+    },
+    "inventory": [],
+    "shop": [
+        {
+            "id": 1,
+            "name": "Focus Potion",
+            "price": 100,
+            "description": "A 30-minute break or treat"
+        },
+        {
+            "id": 2,
+            "name": "Blessed Random Box",
+            "price": 250,
+            "description": "Gives you what you want"
+        },
+        {
+            "id": 3,
+            "name": "Cursed Random Box",
+            "price": 200,
+            "description": "Gives you what you need (harder cha"
+        }
+    ],
+    "quests": [
+        {
+            "id": 2,
+            "name": "Sit-ups (100)",
+            "xp": 10,
+            "gold": 20,
+            "completed": false
+        },
+        {
+            "id": 3,
+            "name": "Squats (100)",
+            "xp": 10,
+            "gold": 20,
+            "completed": false
+        },
+        {
+            "id": 4,
+            "name": "Run (10km)",
+            "xp": 50,
+            "gold": 100,
+            "completed": false
+        }
+    ],
+    "urgent_quests": [
+        {
+            "id": 1775326029106,
+            "name": "New Quest",
+            "xp": 50,
+            "gold": 10,
+            "completed": true
+        }
+    ],
+    "hidden_quests": [],
+    "penalty_active": false,
+    "last_login": "2026-04-05"
+}

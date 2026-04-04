@@ -65,15 +65,13 @@ class AllQuestsUpdate(BaseModel):
 def load_player():
     os.makedirs(DATA_DIR, exist_ok=True)
     
-    # Automatic seeding: if persistent file is missing, copy from default repo location
-    if not os.path.exists(DB_FILE):
-        default_db = "database/player.json"
-        # Only copy if we are using a different DATA_DIR (like in production) 
-        # and the default file exists in the repo
-        if os.path.exists(default_db) and os.path.abspath(DB_FILE) != os.path.abspath(default_db):
+    # Automatic seeding: if persistent file is missing or empty, copy from initial_player.json
+    if not os.path.exists(DB_FILE) or os.path.getsize(DB_FILE) == 0:
+        seed_source = "initial_player.json"
+        if os.path.exists(seed_source):
             try:
-                shutil.copy(default_db, DB_FILE)
-                print(f"Seeded {DB_FILE} from {default_db}")
+                shutil.copy(seed_source, DB_FILE)
+                print(f"Seeded {DB_FILE} from {seed_source}")
             except Exception as e:
                 print(f"Failed to seed {DB_FILE}: {e}")
 
@@ -83,7 +81,7 @@ def load_player():
         with open(DB_FILE, "r") as f:
             try:
                 player = json.load(f)
-            except json.JSONDecodeError:
+            except (json.JSONDecodeError, ValueError):
                 player = {}
     
     # Ensure all required fields exist
