@@ -104,15 +104,38 @@ def load_player():
     if "hidden_quests" not in player: player["hidden_quests"] = []
     if "penalty_active" not in player: player["penalty_active"] = False
     
-    last_login = player.get("last_login", datetime.now().strftime("%Y-%m-%d"))
     today = datetime.now().strftime("%Y-%m-%d")
+    last_login = player.get("last_login", "")
     
     if last_login != today:
         # Penalty check only for daily quests
-        incomplete = any(not q["completed"] for q in player["quests"])
-        player["penalty_active"] = incomplete
-        for q in player["quests"]:
+        # Only check for penalty if there was a previous login recorded
+        if last_login:
+            incomplete = any(not q.get("completed", False) for q in player.get("quests", []))
+            player["penalty_active"] = incomplete
+            
+            # If penalty is triggered, add a penalty quest to urgent_quests
+            if incomplete:
+                penalty_quest = {
+                    "id": 999,
+                    "name": "PENALTY: Survival (4 Hours)",
+                    "xp": 0,
+                    "gold": 0,
+                    "completed": False
+                }
+                # Avoid duplicates
+                if not any(q["id"] == 999 for q in player.get("urgent_quests", [])):
+                    player.setdefault("urgent_quests", []).append(penalty_quest)
+        else:
+            player["penalty_active"] = False
+            
+        # Reset daily quests regardless of penalty
+        for q in player.get("quests", []):
             q["completed"] = False
+        
+        # Clear other completed urgent quests to keep it clean
+        player["urgent_quests"] = [q for q in player.get("urgent_quests", []) if not q.get("completed", False)]
+        
         player["last_login"] = today
         save_player_as_is(player)
         
@@ -177,7 +200,14 @@ async def complete_urgent(task_id: int):
     for quest in player["urgent_quests"]:
         if quest["id"] == task_id and not quest["completed"]:
             quest["completed"] = True
-            add_rewards(player, quest["xp"], quest.get("gold", 0))
+            add_rewards(player, quest.get("xp", 0), quest.get("gold", 0))
+            
+            # If it's the penalty quest, clear the penalty flag
+            if task_id == 999:
+                player["penalty_active"] = False
+                # Remove it or leave it as completed
+                player["urgent_quests"] = [q for q in player["urgent_quests"] if q["id"] != 999]
+
             save_player_as_is(player)
             return player
     raise HTTPException(status_code=400, detail="Urgent quest not found")

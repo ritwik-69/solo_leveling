@@ -1,7 +1,7 @@
 {
     "level": 2,
-    "xp": 40,
-    "gold": 490,
+    "xp": 230,
+    "gold": 780,
     "stat_points": 0,
     "skill_points": 1,
     "rank": "E",
@@ -108,18 +108,17 @@
             "xp": 50,
             "gold": 100,
             "completed": false
-        }
-    ],
-    "urgent_quests": [
+        },
         {
-            "id": 1775326029106,
-            "name": "New Quest",
+            "id": 1775417944249,
+            "name": "New Questertyertyeryt",
             "xp": 50,
             "gold": 10,
-            "completed": true
+            "completed": false
         }
     ],
+    "urgent_quests": [],
     "hidden_quests": [],
     "penalty_active": false,
-    "last_login": "2026-04-05"
+    "last_login": "2026-04-06"
 }
